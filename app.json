@@ -1,7 +1,9 @@
 {
   "expo": {
-    "name": "CCCMM",
+    "name": "ShareCon",
     "slug": "CCCMM",
+    "privacy": "public",
+    "description": "A simple QR-code based Mobile App to exchange contacts effortlessly.",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,7 +19,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to scan barcodes on event tickets."
+      }
     },
     "android": {
       "adaptiveIcon": {

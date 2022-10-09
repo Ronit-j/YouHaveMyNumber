@@ -39,7 +39,7 @@ function HomeScreen({navigation}) {
       var firstName = fullNameSplit[0];
     }
     console.log(detailsArray);
-    if(detailsArray.length == 2){
+    if(detailsArray.length == 2 && detailsArray[0] != ""){
       const contact = {
         [Contacts.Fields.FirstName]: firstName,
         [Contacts.Fields.LastName]: secondName,

@@ -1,17 +1,14 @@
 import QRCode from 'react-native-qrcode-svg';
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TextInput, Button, SafeAreaView, TouchableOpacity, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, TextInput, Button, SafeAreaView, TouchableOpacity, Keyboard, AsyncStorage } from 'react-native';
 import { useState, useEffect } from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import * as Contacts from 'expo-contacts';
-import { Alert} from 'react-native';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // import { UIProvider, Form } from 'react-native-web-jsonschema-form';
 
 import { NavigationContainer} from '@react-navigation/native';
-import { computeWindowedRenderLimits } from 'react-native/Libraries/Lists/VirtualizeUtils';
-import { AutoFocus } from 'expo-camera';
 
 
 function HomeScreen({navigation}) {
@@ -27,7 +24,7 @@ function HomeScreen({navigation}) {
 
   const handleBarCodeScanned =  async ({ type, data }) => {
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
     const detailsArray = data.split(":");
     // check if last name equivalent is entered
     const fullName = detailsArray[0];
@@ -77,7 +74,7 @@ function HomeScreen({navigation}) {
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
           style={StyleSheet.absoluteFillObject}
         />
-        {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
+        {scanned && <Button title={'Tap to Scan'} onPress={() => setScanned(false)} />}
     </View>
     <View style={styles.buttonToNavigate}>  
     <Button
@@ -96,7 +93,33 @@ function DetailsScreen() {
   // let numberValue="00000000";
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(true);
-
+  useEffect(() => {
+    load();
+  }, [])
+  const save = async () => {
+    try {
+        await AsyncStorage.setItem("Name", text);
+        await AsyncStorage.setItem("Number", number);
+    }
+    catch(err){
+      alert(err);
+    }
+  }
+  const load = async () => {
+    try {
+        let name = await AsyncStorage.getItem("Name");
+        let number = await AsyncStorage.getItem("Number");
+        if(name != null) {
+          onChangeText(name);
+        }
+        if(number != null) {
+          onChangeNumber(number);
+        }
+    }
+    catch(err){
+      alert(err);
+    }
+  }
   let flag = 1;
   function changeFlag(){
     setScanned(false);
@@ -115,14 +138,10 @@ function DetailsScreen() {
   }
     return (
     <ScrollView style = {{textAlign:"Center"}}>
-    <View style={{ textAlign: "Center", alignItems: "Center", justifyItems: "Center"}}>
-          
-            <Text style={styles.header}>Edit your details</Text>
-          
-        </View>
+
 
     <View>
-        <Text style={styles.titles}>Name</Text>
+        <Text style={styles.informationText}> Enter your name</Text>
       </View>
     <View style={styles.inputContainer}>
       <TextInput
@@ -134,7 +153,7 @@ function DetailsScreen() {
         onBlur={Keyboard.dismiss}
       />
         <View>
-        <Text style={styles.titles}>Phone Number</Text>
+        <Text style={styles.informationText}>Enter your Phone Number</Text>
       </View>
     </View>
     <View style={styles.inputContainer}>
@@ -153,6 +172,7 @@ function DetailsScreen() {
       onPress= {()=> {
       checkifNull({text, number});
       changeFlag();
+      save();
     }}
     >
       <Text style={styles.saveButtonText}>Save</Text>
@@ -190,7 +210,7 @@ export default function App() {
         options={{
           title: 'Scan Code',
           headerStyle: {
-            backgroundColor: '#f4511e',
+            backgroundColor: '#2942CB',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -201,7 +221,7 @@ export default function App() {
         options={{
           title: 'Personal Contact',
           headerStyle: {
-            backgroundColor: '#f4511e',
+            backgroundColor: '#2942CB',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -221,7 +241,8 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     paddingLeft: 30,
     paddingRight: 30,
-    paddingBottom: 30
+    paddingBottom: 30,
+    borderRadius: 6,
 
   },
   barCodeScannerContainer: {
@@ -229,7 +250,8 @@ const styles = StyleSheet.create({
     width: 500,
     paddingTop: 300,
     paddingLeft: 20,
-    paddingRight: 20
+    paddingRight: 20,
+    borderRadius: 6,
   },
   container: {
     // flex: 1,
@@ -249,10 +271,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign : 'center'
   },
+  informationText:{
+    fontSize: 22,
+    margin: 10,
+    // fontWeight: 'bold',
+    textAlign : 'center'
+  },
   inputContainer: {
     
     paddingTop: 15,
-    height: 100
+    height: 100,
+    borderRadius: 6,
   },
   textInput: {
     borderColor: '#CCCCCC',
@@ -260,16 +289,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     height: 50,
     fontSize: 25,
-    paddingLeft: 20,
-    paddingRight: 20,
     textAlign: "center", 
     
   },
   saveButton: {
     borderWidth: 1,
-    borderColor: '#007BFF',
-    backgroundColor: '#007BFF',
+    borderColor: '#2942CB' ,
+    backgroundColor: '#2942CB' ,
     padding: 15,
+    borderRadius: 6,
     margin: 5
   },
   saveButtonText: {

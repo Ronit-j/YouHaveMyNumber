@@ -1,14 +1,18 @@
 import QRCode from 'react-native-qrcode-svg';
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TextInput, Button, SafeAreaView, TouchableOpacity, Keyboard, AsyncStorage } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, TextInput, Button, TouchableOpacity, Keyboard, AsyncStorage} from 'react-native';
 import { useState, useEffect } from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import * as Contacts from 'expo-contacts';
+// import { SafeAreaView} from 'react-navigation';
+import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+// import { } from 'react-native-safe-area-context';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // import { UIProvider, Form } from 'react-native-web-jsonschema-form';
 
 import { NavigationContainer} from '@react-navigation/native';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 
 function HomeScreen({navigation}) {
@@ -75,21 +79,26 @@ function HomeScreen({navigation}) {
   }
 
   return (
+    <SafeAreaProvider>
+    <SafeAreaView>
     <View style={{ alignItems: 'center', justifyContent: 'center'}}>
     <View style={styles.barCodeScannerContainer}>
         <BarCodeScanner
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
           style={StyleSheet.absoluteFillObject}
         />
-        {scanned && <Button title={'Tap to Scan'} onPress={() => setScanned(false)} />}
+        {scanned ? <Button title={'Tap to Scan'} style={{paddingTop:-100}} onPress={() => setScanned(false)} /> : null}
+        
     </View>
-    <View style={styles.buttonToNavigate}>  
-    <Button
-        title="Go to Details"
-        onPress={() => navigation.push('Details')}
-      />
-    </View>
+    
+    { !scanned ? <TouchableOpacity
+      style={styles.stopScanButton}
+      onPress={() => setScanned(true)}>
+      <Text style={styles.saveButtonText}>Stop the scan</Text>
+    </TouchableOpacity>: null}
   </View>
+  </SafeAreaView>
+  </SafeAreaProvider>
   );
 }
 
@@ -144,6 +153,9 @@ function DetailsScreen() {
     }
   }
     return (
+    <SafeAreaProvider>
+      <SafeAreaView>
+    <View>
     <ScrollView style = {{textAlign:"Center"}}>
 
 
@@ -203,42 +215,40 @@ function DetailsScreen() {
       
   </View>
   </ScrollView>
+  </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
-const Stack = createNativeStackNavigator();
+const Tab = createMaterialTopTabNavigator();
 
 export default function App() {
-  
+
   return (
+    
+    <SafeAreaProvider>
+    
+    
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen}
+      <Tab.Navigator style={{paddingTop: 30}} >
+
+        <Tab.Screen name="Home" component={HomeScreen}
         options={{
+          
           title: 'Scan Code',
-          headerStyle: {
-            backgroundColor: '#2942CB',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
+          
         }} />
-        <Stack.Screen name="Details" component={DetailsScreen}
+        <Tab.Screen name="Details" component={DetailsScreen}
         options={{
-          title: 'Personal Contact',
-          headerStyle: {
-            backgroundColor: '#2942CB',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
+          title: 'Contact details',
         }}
         />
-      </Stack.Navigator>
+      </Tab.Navigator>
     </NavigationContainer>
-  );
+    
+    </SafeAreaProvider>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -253,12 +263,15 @@ const styles = StyleSheet.create({
 
   },
   barCodeScannerContainer: {
-    height: 600,
-    width: 500,
-    paddingTop: 300,
+
+    height: 500,
+    width: 350,
+    paddingTop: 400,
+    marginTop:60,
     paddingLeft: 20,
     paddingRight: 20,
     borderRadius: 6,
+    borderWidth:10
   },
   container: {
     // flex: 1,
@@ -280,15 +293,18 @@ const styles = StyleSheet.create({
   },
   informationText:{
     fontSize: 22,
-    margin: 10,
+    marginTop: 10,
     // fontWeight: 'bold',
     textAlign : 'center'
   },
   inputContainer: {
     
-    paddingTop: 15,
-    height: 100,
+    marginTop:20,
+    paddingBottom: 5,
+    height: 80,
     borderRadius: 6,
+    fontSize: 20
+
   },
   textInput: {
     borderColor: '#CCCCCC',
@@ -311,5 +327,20 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 20,
     textAlign: 'center'
-  }
+  },
+  stopScanButton:{
+    paddingTop: 10,
+    marginTop: 50,
+    backgroundColor: '#5C72EB',
+    padding: 15,
+    textAlign: "center", 
+    borderColor: '#CCCCCC',
+    borderRadius: 6,
+    margin: 5
+  },
+  stopScanButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    textAlign: 'center'
+  },
 });

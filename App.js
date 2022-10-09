@@ -39,25 +39,32 @@ function HomeScreen({navigation}) {
       var firstName = fullNameSplit[0];
     }
     console.log(detailsArray);
-    const contact = {
-      [Contacts.Fields.FirstName]: firstName,
-      [Contacts.Fields.LastName]: secondName,
-      [Contacts.Fields.PhoneNumbers]: [{number: detailsArray[1],
-      isPrimary: true,
-      digits: data,
-      countryCode: "USA",
-      id: "1",
-      label: "main",}
-    ]
-
-    };
-    try{
-    const contactId = await Contacts.addContactAsync(contact);
-    console.log(contactId);
+    if(detailsArray.length == 2){
+      const contact = {
+        [Contacts.Fields.FirstName]: firstName,
+        [Contacts.Fields.LastName]: secondName,
+        [Contacts.Fields.PhoneNumbers]: [{number: detailsArray[1],
+        isPrimary: true,
+        digits: data,
+        countryCode: "USA",
+        id: "1",
+        label: "main",}
+      ]
+  
+      };
+      try{
+        const contactId = await Contacts.addContactAsync(contact);
+        console.log(contactId);
+        }
+        catch(error){
+          console.log(error);
+        }
     }
-    catch(error){
-      console.log(error);
+    else{
+      alert("Scanned QR code not valid");
     }
+    
+    
   };
 
   if (hasPermission === null) {

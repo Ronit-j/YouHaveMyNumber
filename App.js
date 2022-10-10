@@ -104,8 +104,8 @@ function HomeScreen({navigation}) {
 
 function DetailsScreen() {
   const [text, onChangeText] = React.useState("Ronit Jorvekar");
-  const [number, onChangeNumber] = React.useState("1234567890");
-  const [numberValue, onChangeNumberValue] = React.useState("000000000");
+  const [number, onChangeNumber] = React.useState("1231231234");
+  const [numberValue, onChangeNumberValue] = React.useState("1231231234");
   // let numberValue="00000000";
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(true);
@@ -131,6 +131,8 @@ function DetailsScreen() {
         if(number != null) {
           onChangeNumber(number);
         }
+        onChangeNumberValue(name + ':' + number);
+
     }
     catch(err){
       alert(err);
@@ -143,7 +145,7 @@ function DetailsScreen() {
 
   function checkifNull(details){
     console.log(details);
-    if(details.number != ""){
+    if(details.number != "" && details.text != ""){
       onChangeNumberValue(details.text + ':' + details.number);
       console.log({numberValue});
     }
@@ -321,6 +323,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#2942CB' ,
     padding: 15,
     borderRadius: 6,
+    width:350,
+    marginTop:-20,
+    marginLeft:38,
+
     margin: 5
   },
   saveButtonText: {

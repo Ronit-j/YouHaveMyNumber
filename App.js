@@ -57,8 +57,12 @@ function HomeScreen({navigation}) {
   
       };
       try{
-        const contactId = await Contacts.addContactAsync(contact);
-        console.log(contactId);
+        const { status } = await Contacts.requestPermissionsAsync();
+        if (status === 'granted') {
+          const contactId = await Contacts.addContactAsync(contact);
+          console.log(contactId);
+        }
+        
         }
         catch(error){
           console.log(error);
